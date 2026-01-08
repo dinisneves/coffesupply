@@ -1,0 +1,159 @@
+{
+	"compiler": {
+		"version": "0.8.31+commit.fd3a2265"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "admin",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "batchCounter",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "batches",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "currentCustodian",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "parentBatchId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum CoffeeDataStorage.State",
+						"name": "state",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "gpsCoordinates",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "bioDataHash",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tempMaxRegister",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "himidityRegister",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isCertified",
+						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "certDocHash",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "coffeeSupplyChainAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			".git/contracts/CoffeeDataStorage.sol": "CoffeeDataStorage"
+		},
+		"evmVersion": "osaka",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		".git/contracts/CoffeeDataStorage.sol": {
+			"keccak256": "0xf699a47917a3f4be59b7023d3048a43b9e932d7f150e73e7051693c0e26ed983",
+			"license": "SEE LICENSE IN LICENSE",
+			"urls": [
+				"bzz-raw://e4156937060cd4d0403d9627dd6c80db2d3bd644b0fba4d8a0feefec8df186b3",
+				"dweb:/ipfs/QmcjeM2rBznMjWNbfC3CxpK4TyXCi9y52BvDgUP56pb46q"
+			]
+		}
+	},
+	"version": 1
+}

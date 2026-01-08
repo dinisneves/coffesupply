@@ -132,7 +132,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			".git/contracts/CoffeeDataStorage.sol": "CoffeeDataStorage"
+			"contracts/CoffeeDataStorage.sol": "CoffeeDataStorage"
 		},
 		"evmVersion": "osaka",
 		"libraries": {},
@@ -146,7 +146,7 @@
 		"remappings": []
 	},
 	"sources": {
-		".git/contracts/CoffeeDataStorage.sol": {
+		"contracts/CoffeeDataStorage.sol": {
 			"keccak256": "0xf699a47917a3f4be59b7023d3048a43b9e932d7f150e73e7051693c0e26ed983",
 			"license": "SEE LICENSE IN LICENSE",
 			"urls": [

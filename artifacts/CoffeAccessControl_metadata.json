@@ -264,7 +264,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			".git/contracts/CoffeAccessControl.sol": "CoffeAccessControl"
+			"contracts/CoffeAccessControl.sol": "CoffeAccessControl"
 		},
 		"evmVersion": "osaka",
 		"libraries": {},
@@ -278,7 +278,7 @@
 		"remappings": []
 	},
 	"sources": {
-		".git/contracts/CoffeAccessControl.sol": {
+		"contracts/CoffeAccessControl.sol": {
 			"keccak256": "0x5fb0b19369ec0e5abb646fe9f2602bb0c61c36b1c808d443b2bd55ba8fae4df4",
 			"license": "SEE LICENSE IN LICENSE",
 			"urls": [

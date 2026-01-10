@@ -29,7 +29,7 @@ contract CoffeeDataStorage {
 
         //Dados dos sensores (para meios logisticos)
         uint256 tempMaxRegister;
-        uint256 himidityRegister;
+        uint256 humidityRegister;
 
         // Certificação
         bool isCertified;
@@ -65,5 +65,48 @@ contract CoffeeDataStorage {
         admin = msg.sender;
     }
 
+    // Configuração: Ligação ao contrato CoffeeSupplyChain
+    function setCoffeeSupplyChainAddress(address _coffeeSupplyChainAddress) external onlyAdmin{
+        coffeeSupplyChainAddress = _coffeeSupplyChainAddress;
+    }
 
+    // --- SETTERS (Funções chamadas pelo contrato CoffeeSupplyChain) ---
+
+    // Função para criar o lote
+    function createBatch(address _creator, string memory _gps, string memory _bioHash) external onlySupplyChain returns (uint256) {
+        batchCounter++;
+        uint256 newId = batchCounter;
+
+        batches[newId].id = newId; // Id do lote
+        batches[newId].creator = _creator; // Endereço do agricultor
+        batches[newId].currentCustodian = _creator; // Endereço do agricultor (Porque no inicio é a mesma pessoa que o criador do lote)
+        batches[newId].state = State.Harvested; // Estado do lote (Colhido)
+        batches[newId].gpsCoordinates = _gps; // Coordenadas do local onde foi colhido 
+        batches[newId].bioDataHash = _bioHash; // 
+
+        return newId;
+    }
+
+    // Alterar o "dono" do lote, ou seja, quem possui a custódia do lote
+    function updateCustodian(uint256 _id, address _newCustodian) external onlySupplyChain {
+        batches[_id].currentCustodian = _newCustodian;
+    }
+
+    // Registar os dados dos sensores durante o transporte do lote
+    function setSensorData(uint256 _id, uint256 _temp, uint256 _hum) external onlySupplyChain {
+        batches[_id].tempMaxRegister = _temp;
+        batches[_id].humidityRegister = _hum;
+    }
+
+    // --- GETTERS ---
+
+    // Função para obter o estado do lote
+    function getBatchState(uint256 _id) external view returns (State) {
+        return batches[_id].state;
+    }
+
+    // Função para obter quem está com a custódia do lote
+    function getBatchCustodian(uint256 _id) external view returns (address) {
+        return batches[_id].currentCustodian;
+    }
 }

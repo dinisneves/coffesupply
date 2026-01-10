@@ -4,7 +4,7 @@ pragma solidity ^0.8.30;
 // Contrato: CoffeAccessControl
 // Gere as permissões de todos os intervenientes do sistema
 
-contract CoffeAccessControl {
+contract CoffeeAccessControl {
     // keccak256 é usado para geriar um ID único e seguro para cada role
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN");
     bytes32 public constant FARMER_ROLE = keccak256("FARMER");

@@ -87,6 +87,26 @@ contract CoffeeDataStorage {
         return newId;
     }
 
+
+    function createProcessedBatch(address _processor, string memory _dataHash, uint256 _parentId) external onlySupplyChain returns (uint256) {
+        batchCounter++;
+        uint256 newId = batchCounter;
+
+        batches[newId].id = newId;
+        batches[newId].creator = _processor;
+        batches[newId].currentCustodian = _processor;
+        batches[newId].parentBatchId = _parentId; // Link para rastreabilidade
+        batches[newId].state = State.Processed;
+        batches[newId].bioDataHash = _dataHash; // Reutilizando campo para dados de processamento
+
+        return newId;
+    }
+
+    // Alterar o estado do lote
+    function updateState(uint256 _id, State _newState) external onlySupplyChain {
+        batches[_id].state = _newState;
+    }
+
     // Alterar o "dono" do lote, ou seja, quem possui a custódia do lote
     function updateCustodian(uint256 _id, address _newCustodian) external onlySupplyChain {
         batches[_id].currentCustodian = _newCustodian;
@@ -96,6 +116,15 @@ contract CoffeeDataStorage {
     function setSensorData(uint256 _id, uint256 _temp, uint256 _hum) external onlySupplyChain {
         batches[_id].tempMaxRegister = _temp;
         batches[_id].humidityRegister = _hum;
+    }
+
+    // Associar ceriticados ao lote
+    function setCertification(uint256 _id, bool _status, string memory _docHash) external onlySupplyChain {
+        batches[_id].isCertified = _status;
+        batches[_id].certDocHash = _docHash;
+        if(_status) {
+            batches[_id].state = State.Certified;
+        }
     }
 
     // --- GETTERS ---

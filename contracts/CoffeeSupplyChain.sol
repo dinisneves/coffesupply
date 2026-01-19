@@ -18,8 +18,8 @@ contract CoffeeSupplyChain {
 
     // Eventos
     event Harvested(uint256 batchId, address indexed farmer);
-    event Transport(uint256 batchId, address indexed carrier);
-    event TransportStarted(uint256 batchId, bool qualityPassed);
+    event TransportStarted(uint256 batchId, address indexed carrier);
+    event TransportFinished(uint256 batchId, bool qualityPassed);
     event Processed(uint256 newBatchId, uint256 parentBatchId);
     event Certified(uint256 batchId, address indexed certifier);
 
@@ -35,4 +35,43 @@ contract CoffeeSupplyChain {
         emit Harvested(newId, msg.sender);
     }
 
+     // --- 2.  TRANSPORTE - Ponto A - Inicio ---
+    function startTransport(uint256 _batchId) public {
+        require(accessContol.hasRole(accessContol.CARRIER_ROLE(), msg.sender), "Erro: Nao e transportador");
+
+        // Verificar estado
+        CoffeeDataStorage.State currentState = dataStorage.getBatchState(_batchId);
+        require(
+            currentState == CoffeeDataStorage.State.Harvested || 
+            currentState == CoffeeDataStorage.State.Processed,
+            "Lote nao pronto para transporte"
+        );
+
+        //Mudar custódia e estado do lote
+        dataStorage.updateCustodian(_batchId, msg.sender);
+        dataStorage.updateState(_batchId, CoffeeDataStorage.State.InTransit);
+
+        emit TransportStarted(_batchId, msg.sender);
+    }
+
+    // --- 3. TRANSPORTE - Ponto B - Final ---
+    function finishTransport(uint256 _batchId, uint256 _tempReading, uint256 _humidReading) public {
+        // Apenas quem tem a custódia atual do lote (o motorista), pode finalizar o transporte
+        require(dataStorage.getBatchCustodian(_batchId) == msg.sender, "Erro: sem custodia do lote");
+        require(dataStorage.getBatchState(_batchId) == CoffeeDataStorage.State.InTransit, "Erro: Lote nao esta em transito");
+
+        // Registar os dados que são imutabeis
+        dataStorage.setSensorData(_batchId, _tempReading, _humidReading);
+
+        // Gatiho 
+        if(_tempReading > MAX_TEMP_THRESHOLD || _humidReading > MAX_HUMIDITY_THRESHOLD){
+            // Fallback: Rejeitar o lote
+            dataStorage.updateState(_batchId, CoffeeDataStorage.State.Rejected);
+            emit TransportFinished(_batchId, false); // False = Falhou qualidade
+        }else{
+            // Sucesso
+            dataStorage.updateState(_batchId, CoffeeDataStorage.State.Delivered);
+            emit TransportFinished(_batchId, true); // True = Passou qualidade
+        }
+    }
 }

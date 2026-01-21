@@ -74,4 +74,28 @@ contract CoffeeSupplyChain {
             emit TransportFinished(_batchId, true); // True = Passou qualidade
         }
     }
+
+    // --- 4. PROCESADOR: Transformação ---
+    function processBatch(uint256 _parentBatchId, string memory _roastingDataHash) public {
+        require(accessContol.hasRole(accessContol.PROCESSOR_ROLE(), msg.sender), "Erro: Nao e Processador");
+
+        // Verifica se o lote chegou e foi aprovado
+        CoffeeDataStorage.State parentState = dataStorage.getBatchState(_parentBatchId);
+        require(parentState == CoffeeDataStorage.State.Delivered, "Erro: Lote pai nao entregue ou rejeitado");
+    
+        // Cria novo lote derivado (Link para rastreabilidade)
+        uint256 newId = dataStorage.createProcessedBatch(msg.sender, _roastingDataHash, _parentBatchId);
+
+
+        emit Processed(newId, _parentBatchId);
+    }
+
+    // --- 5. Certificador: Validação ---
+    function certifyBatch(uint256 _batchId, bool _isValid, string memory _docHash) public {
+        require(accessContol.hasRole(accessContol.CERTIFIER_ROLE(), msg.sender), "Erro: Nao e Certificador");
+
+        dataStorage.setCertification(_batchId, _isValid, _docHash);
+        
+        emit Certified(_batchId, msg.sender);
+   }
 }

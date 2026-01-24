@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.30;
 
-// Contrato: CoffeeDataStorage
-// Guarda o estado dos lotes. Apenas o contrato CoffeeSupplyChain pode escrever aqui. 
+// @title CoffeeDataStorage
+// @dev Guarda o estado dos lotes. Apenas o contrato CoffeeSupplyChain pode escrever aqui. 
 
 contract CoffeeDataStorage {
  
+    // --- MODELAGEM DE DADOS ---
     // Todos os estados possiveis que o lote pode possuir
     enum State {
         Harvested, // 0
@@ -16,24 +17,25 @@ contract CoffeeDataStorage {
         Certified  // 5
     }
 
+    // A estrutura do lote
     struct Batch {
-        uint256 id;
-        address creator;  // Quem criou o lote - Agricultor original
-        address currentCustodian; // Quem tem a posse fisica atualmente do lote
-        uint256 parentBatchId; // ID do lote anterior (usado para rastreabilidade)
-        State state; // Estado atual do lote
+        uint256 id;                 // Identificador único
+        address creator;            // Endereço de quem criou o lote - Agricultor original
+        address currentCustodian;   // Endereço de quem tem a posse fisica atualmente do lote
+        uint256 parentBatchId;      // ID do lote anterior (usado para rastreabilidade)
+        State state;                // Estado atual do lote
 
         // Dados Imutáveis (Privavidade utilizando hash)
         string gpsCoordinates;
         string bioDataHash;
 
-        //Dados dos sensores (para meios logisticos)
-        uint256 tempMaxRegister;
-        uint256 humidityRegister;
+        //Dados dos sensores - IoT (para meios logisticos)
+        uint256 tempMaxRegister;    // Temperatura máxima registada
+        uint256 humidityRegister;   // Humidade registada
 
         // Certificação
-        bool isCertified;
-        string certDocHash; // Hash do certificado emitido
+        bool isCertified;           // Se o lote está certificado
+        string certDocHash;         // Hash do certificado emitido
     }
     // Ter tambem mais informações do lote:
     // Peso do lote
@@ -44,13 +46,15 @@ contract CoffeeDataStorage {
     // Data de certificação
 
     // ------------------------------- Funções de gestão -----------------------------
-    mapping(uint256 => Batch) public batches; // Mapeamento de lotes por ID
-    uint256 public batchCounter; 
+    mapping(uint256 => Batch) public batches; // Mapeamento de lotes por ID, tipo (1,2,3)
+    uint256 public batchCounter;              // Contador que serve para auto incrementar o id do Batch
 
     //Endereço do contrato CoffeeSupplyChain
-    address public coffeeSupplyChainAddress; //supplyChainContract
+    address public coffeeSupplyChainAddress; //SupplyChainContract
     address public admin;
 
+
+    // Garante que só o contrato CoffeeSupplyChain pode alterar dados neste contrato (CoffeeDataStorage)
     modifier onlySupplyChain(){
         require(msg.sender == coffeeSupplyChainAddress, "Acesso negado: Apenas SupplyChain");
         _;
@@ -65,7 +69,9 @@ contract CoffeeDataStorage {
         admin = msg.sender;
     }
 
+
     // Configuração: Ligação ao contrato CoffeeSupplyChain
+    // Basicamente dizemos "Apenas obedece às ordens do enderexo X"
     function setCoffeeSupplyChainAddress(address _coffeeSupplyChainAddress) external onlyAdmin{
         coffeeSupplyChainAddress = _coffeeSupplyChainAddress;
     }
@@ -74,20 +80,22 @@ contract CoffeeDataStorage {
 
     // Função para criar o lote
     function createBatch(address _creator, string memory _gps, string memory _bioHash) external onlySupplyChain returns (uint256) {
-        batchCounter++;
+        batchCounter++;  // Incrementa o ID
         uint256 newId = batchCounter;
 
+        // Preenche os dados iniciais para criar um novo lote
         batches[newId].id = newId; // Id do lote
         batches[newId].creator = _creator; // Endereço do agricultor
         batches[newId].currentCustodian = _creator; // Endereço do agricultor (Porque no inicio é a mesma pessoa que o criador do lote)
         batches[newId].state = State.Harvested; // Estado do lote (Colhido)
         batches[newId].gpsCoordinates = _gps; // Coordenadas do local onde foi colhido 
-        batches[newId].bioDataHash = _bioHash; // 
+        batches[newId].bioDataHash = _bioHash; 
 
-        return newId;
+        return newId;   // Devolve o ID para o contrato CoffeeSupplyChain emitir o evento
     }
 
 
+    // Cria um lote "transformado", pois esta já vai depender de um lote existente
     function createProcessedBatch(address _processor, string memory _dataHash, uint256 _parentId) external onlySupplyChain returns (uint256) {
         batchCounter++;
         uint256 newId = batchCounter;
@@ -95,7 +103,7 @@ contract CoffeeDataStorage {
         batches[newId].id = newId;
         batches[newId].creator = _processor;
         batches[newId].currentCustodian = _processor;
-        batches[newId].parentBatchId = _parentId; // Link para rastreabilidade
+        batches[newId].parentBatchId = _parentId; // Link para rastreabilidade para o lote anterior, criando o elo entre lotes
         batches[newId].state = State.Processed;
         batches[newId].bioDataHash = _dataHash; // Reutilizando campo para dados de processamento
 

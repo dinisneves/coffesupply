@@ -29,6 +29,11 @@ contract CoffeeDataStorage {
         string gpsCoordinates;
         string bioDataHash;
 
+        string coffeeVariety; // Ex: "Arábica Typica" [cite: 292]
+        string carbonFootprint;   // Ex: "2.4kg CO2/kg"
+        string socialImpact;      // Ex: "Apoio a 10 famílias locais"
+
+
         //Dados dos sensores - IoT (para meios logisticos)
         uint256 tempMaxRegister;    // Temperatura máxima registada
         uint256 humidityRegister;   // Humidade registada
@@ -79,7 +84,7 @@ contract CoffeeDataStorage {
     // --- SETTERS (Funções chamadas pelo contrato CoffeeSupplyChain) ---
 
     // Função para criar o lote
-    function createBatch(address _creator, string memory _gps, string memory _bioHash) external onlySupplyChain returns (uint256) {
+    function createBatch(address _creator, string memory _gps, string memory _bioHash, string memory _variety) external onlySupplyChain returns (uint256) {
         batchCounter++;  // Incrementa o ID
         uint256 newId = batchCounter;
 
@@ -90,6 +95,7 @@ contract CoffeeDataStorage {
         batches[newId].state = State.Harvested; // Estado do lote (Colhido)
         batches[newId].gpsCoordinates = _gps; // Coordenadas do local onde foi colhido 
         batches[newId].bioDataHash = _bioHash; 
+        batches[newId].coffeeVariety = _variety; // Guarda a variedade [cite: 292]
 
         return newId;   // Devolve o ID para o contrato CoffeeSupplyChain emitir o evento
     }
@@ -145,5 +151,16 @@ contract CoffeeDataStorage {
     // Função para obter quem está com a custódia do lote
     function getBatchCustodian(uint256 _id) external view returns (address) {
         return batches[_id].currentCustodian;
+    }
+
+    // Função para obter o criador original do lote (Agricultor)
+    function getBatchCreator(uint256 _id) external view returns (address) {
+        return batches[_id].creator;
+    }
+
+    // Função de Leitura Completa para o Consumidor
+    function getBatchFullInfo(uint256 _id) public view returns (string memory origem, string memory variedade, string memory certificacao, string memory pegadaCarbono, string memory impactoSocial, State estadoAtual){
+        Batch storage b = batches[_id];
+        return (b.gpsCoordinates, b.coffeeVariety, b.certDocHash, b.carbonFootprint,   b.socialImpact, b.state);
     }
 }

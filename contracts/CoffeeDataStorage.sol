@@ -133,13 +133,17 @@ contract CoffeeDataStorage {
     }
 
     // Associar ceriticados ao lote
-    function setCertification(uint256 _id, bool _status, string memory _docHash) external onlySupplyChain {
+    function setCertification(uint256 _id, bool _status, string memory _docHash, string memory _carbonFootprint, string memory _socialImpact) external onlySupplyChain {
         batches[_id].isCertified = _status;
         batches[_id].certDocHash = _docHash;
+        batches[_id].carbonFootprint = _carbonFootprint;
+        batches[_id].socialImpact = _socialImpact;
+
         if(_status) {
             batches[_id].state = State.Certified;
         }
     }
+    
 
     // --- GETTERS ---
 
@@ -158,9 +162,9 @@ contract CoffeeDataStorage {
         return batches[_id].creator;
     }
 
-    // Função de Leitura Completa para o Consumidor
-    function getBatchFullInfo(uint256 _id) public view returns (string memory origem, string memory variedade, string memory certificacao, string memory pegadaCarbono, string memory impactoSocial, State estadoAtual){
+    // Função exemplo do histórico do batch - Consumidor
+    function getBatchFullInfo(uint256 _id) public view returns (string memory origin, string memory coffeeVariety, string memory cerfifyHash, string memory carbonFootprint, string memory socialImpact, State state){
         Batch storage b = batches[_id];
-        return (b.gpsCoordinates, b.coffeeVariety, b.certDocHash, b.carbonFootprint,   b.socialImpact, b.state);
+        return (b.gpsCoordinates, b.coffeeVariety, b.certDocHash, b.carbonFootprint,  b.socialImpact, b.state);
     }
 }

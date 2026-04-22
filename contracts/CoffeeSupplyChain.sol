@@ -104,11 +104,11 @@ contract CoffeeSupplyChain {
     }
 
     // --- 5. Certificador: Validação ---
-    function certifyBatch(uint256 _batchId, bool _isValid, string memory _docHash) public {
+    function certifyBatch(uint256 _batchId, bool _isValid, string memory _docHash, string memory _carbonFootprint, string memory _socialImpact) public {
         // Verificar se o endereço que está a chamar a função é um "certificador"
         require(accessContol.hasRole(accessContol.CERTIFIER_ROLE(), msg.sender), "Erro: Nao e Certificador");
 
-        dataStorage.setCertification(_batchId, _isValid, _docHash);
+        dataStorage.setCertification(_batchId, _isValid, _docHash, _carbonFootprint, _socialImpact);
         
         emit Certified(_batchId, msg.sender);
    }
